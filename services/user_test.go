@@ -14,7 +14,7 @@ var _ = Describe("User", func() {
 
 		service := services.NewUser(db, "bot@example.com")
 
-		channels, err := service.Channels()
+		channels, err := service.OccupiedChannels()
 		Expect(err).NotTo(HaveOccurred())
 		Expect(channels).To(HaveLen(1))
 	})

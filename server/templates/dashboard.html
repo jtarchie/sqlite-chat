@@ -1,6 +1,9 @@
 {% import "github.com/jtarchie/sqlite-chat/services" %}
 
-{% func Dashboard(user *services.User) %}
+{% func Dashboard(
+  user *services.UserService,
+  channel *services.ChannelService,
+) %}
 <!doctype html>
 <html lang="en">
 
@@ -52,8 +55,10 @@
       </ul>
       <ul>
         <li>
-          <form>
-            <input type="search" placeholder="Search" aria-label="Search" </form>
+          <form role="search">
+            <input type="search" placeholder="Search" aria-label="Search">
+            <input type="submit" value="🔍">
+          </form>
         </li>
       </ul>
     </nav>
@@ -67,7 +72,7 @@
           </summary>
           <ul>
             {% code 
-              channels, _ := user.Channels()
+              channels, _ := user.OccupiedChannels()
             %}
             {% for _, channel := range channels %}
             <li><a href="/channels/{%d channel.ID %}">{%s channel.Name %}</a></li>

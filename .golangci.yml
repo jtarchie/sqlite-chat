@@ -10,9 +10,10 @@ linters:
   - lll
 
   # turned off for building
-  - varnamelen
-  - unparam
   - revive
+  - unparam
+  - varnamelen
+  - wrapcheck
 
   # linters deprecated
   - deadcode

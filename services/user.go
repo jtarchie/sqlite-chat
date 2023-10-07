@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type User struct {
+type UserService struct {
 	db    *sqlx.DB
 	email string
 }
@@ -15,8 +15,8 @@ type User struct {
 func NewUser(
 	db *sqlx.DB,
 	email string,
-) *User {
-	return &User{
+) *UserService {
+	return &UserService{
 		db:    db,
 		email: email,
 	}
@@ -31,7 +31,7 @@ type Channel struct {
 
 type Channels []Channel
 
-func (u *User) Channels() (Channels, error) {
+func (u *UserService) OccupiedChannels() (Channels, error) {
 	channels := Channels{}
 
 	err := u.db.Select(&channels, "SELECT channel_name, channel_id, private, description FROM user_channels WHERE email_address = ?", u.email)

@@ -16,7 +16,10 @@ var (
 	_ = qt422016.AcquireByteBuffer
 )
 
-func StreamDashboard(qw422016 *qt422016.Writer, user *services.User) {
+func StreamDashboard(qw422016 *qt422016.Writer,
+	user *services.UserService,
+	channel *services.ChannelService,
+) {
 	qw422016.N().S(`
 <!doctype html>
 <html lang="en">
@@ -69,8 +72,10 @@ func StreamDashboard(qw422016 *qt422016.Writer, user *services.User) {
       </ul>
       <ul>
         <li>
-          <form>
-            <input type="search" placeholder="Search" aria-label="Search" </form>
+          <form role="search">
+            <input type="search" placeholder="Search" aria-label="Search">
+            <input type="submit" value="🔍">
+          </form>
         </li>
       </ul>
     </nav>
@@ -84,7 +89,7 @@ func StreamDashboard(qw422016 *qt422016.Writer, user *services.User) {
           </summary>
           <ul>
             `)
-	channels, _ := user.Channels()
+	channels, _ := user.OccupiedChannels()
 
 	qw422016.N().S(`
             `)
@@ -131,15 +136,21 @@ func StreamDashboard(qw422016 *qt422016.Writer, user *services.User) {
 `)
 }
 
-func WriteDashboard(qq422016 qtio422016.Writer, user *services.User) {
+func WriteDashboard(qq422016 qtio422016.Writer,
+	user *services.UserService,
+	channel *services.ChannelService,
+) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	StreamDashboard(qw422016, user)
+	StreamDashboard(qw422016, user, channel)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func Dashboard(user *services.User) string {
+func Dashboard(
+	user *services.UserService,
+	channel *services.ChannelService,
+) string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	WriteDashboard(qb422016, user)
+	WriteDashboard(qb422016, user, channel)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
