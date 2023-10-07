@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/alecthomas/kong"
+	"github.com/jtarchie/sqlite-chat/server"
 	"github.com/jtarchie/sqlite-chat/services"
 )
 
@@ -36,7 +37,7 @@ func (c *CLI) Run() error {
 		return fmt.Errorf("could not setup DB: %w", err)
 	}
 
-	server, err := NewServer(
+	server, err := server.New(
 		db,
 		c.ClientID,
 		c.ClientSecret,

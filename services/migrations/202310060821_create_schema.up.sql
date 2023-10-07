@@ -72,6 +72,7 @@ CREATE TABLE messages(
   user_id INTEGER NOT NULL,
   channel_id INTEGER NOT NULL,
   parent_id INTEGER,
+  copy TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(channel_id) REFERENCES channels(id) ON DELETE CASCADE,
@@ -116,6 +117,11 @@ INSERT INTO
   channel_members (user_id, channel_id)
 VALUES
   (1, 1);
+
+INSERT INTO
+  messages (user_id, channel_id, copy)
+VALUES
+  (1, 1, "Welcome to the chat!");
 
 CREATE VIEW user_channels AS
 SELECT

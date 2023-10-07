@@ -90,9 +90,11 @@ func StreamDashboard(qw422016 *qt422016.Writer, user *services.User) {
             `)
 	for _, channel := range channels {
 		qw422016.N().S(`
-            <li>`)
+            <li><a href="/channels/`)
+		qw422016.N().D(channel.ID)
+		qw422016.N().S(`">`)
 		qw422016.E().S(channel.Name)
-		qw422016.N().S(`</li>
+		qw422016.N().S(`</a></li>
             `)
 	}
 	qw422016.N().S(`

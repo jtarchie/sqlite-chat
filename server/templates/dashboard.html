@@ -70,7 +70,7 @@
               channels, _ := user.Channels()
             %}
             {% for _, channel := range channels %}
-            <li>{%s channel.Name %}</li>
+            <li><a href="/channels/{%d channel.ID %}">{%s channel.Name %}</a></li>
             {% endfor %}
           </ul>
         </details>

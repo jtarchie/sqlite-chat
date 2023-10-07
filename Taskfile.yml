@@ -10,7 +10,7 @@ tasks:
     - go generate ./...
     - go build github.com/jtarchie/sqlite-chat
   lint: golangci-lint run --fix --timeout "10m"
-  test: go test -cover -race ./...
+  test: go run github.com/onsi/ginkgo/v2/ginkgo -cover -race -r -p
   default:
     cmds:
     - task: generate

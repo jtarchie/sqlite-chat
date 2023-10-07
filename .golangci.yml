@@ -8,8 +8,11 @@ linters:
   - paralleltest
   - gomoddirectives
   - lll
+
+  # turned off for building
   - varnamelen
   - unparam
+  - revive
 
   # linters deprecated
   - deadcode

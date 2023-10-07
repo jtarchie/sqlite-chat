@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"github.com/dghubble/gologin/v2"
 	oauthHandler "github.com/dghubble/gologin/v2/oauth2"
 	"github.com/jmoiron/sqlx"
+	"github.com/jtarchie/sqlite-chat/server/templates"
 	"github.com/jtarchie/sqlite-chat/services"
-	"github.com/jtarchie/sqlite-chat/templates"
 	"github.com/labstack/echo/v4"
 	slogecho "github.com/samber/slog-echo"
 	"golang.org/x/oauth2"
@@ -18,7 +18,7 @@ import (
 
 //go:generate go run github.com/valyala/quicktemplate/qtc -ext=html -dir=templates/ -skipLineComments
 
-func NewServer(
+func New(
 	db *sqlx.DB,
 	clientID string,
 	clientSecret string,

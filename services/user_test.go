@@ -1,10 +1,9 @@
 package services_test
 
 import (
+	"github.com/jtarchie/sqlite-chat/services"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-
-	"github.com/jtarchie/sqlite-chat/services"
 )
 
 var _ = Describe("User", func() {
@@ -14,7 +13,7 @@ var _ = Describe("User", func() {
 		defer db.Close()
 
 		service := services.NewUser(db, "bot@example.com")
-		
+
 		channels, err := service.Channels()
 		Expect(err).NotTo(HaveOccurred())
 		Expect(channels).To(HaveLen(1))
