@@ -1,9 +1,9 @@
-package main
+package services
 
 import (
+	"embed"
 	"errors"
 	"fmt"
-	"embed"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -20,6 +20,13 @@ func NewDB(urn string) (*sqlx.DB, error) {
 	db, err := sqlx.Open("libsql", urn)
 	if err != nil {
 		return nil, fmt.Errorf("could open database: %w", err)
+	}
+
+	_, err = db.Exec(`
+		PRAGMA foreign_keys = ON;
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("could not setup the database: %w", err)
 	}
 
 	migrationsFS, err := iofs.New(migrations, "migrations")
@@ -42,7 +49,7 @@ func NewDB(urn string) (*sqlx.DB, error) {
 
 	err = migrator.Up()
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return nil,fmt.Errorf("could not migrate up: %w", err)
+		return nil, fmt.Errorf("could not migrate up: %w", err)
 	}
 
 	return db, nil

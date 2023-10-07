@@ -7,14 +7,15 @@ import (
 	"os"
 
 	"github.com/alecthomas/kong"
+	"github.com/jtarchie/sqlite-chat/services"
 )
 
 type CLI struct {
-	URN            string `help:"urn for the database" default:"file:test.db?cache=shared&mode=memory"`
-	Port           int    `help:"port to listen for HTTP connections" default:"8080"`
-	ClientID       string `help:"client ID to hello.dev" required:"" env:"OAUTH_CLIENT_ID"`
-	ClientSecret   string `help:"client Secret to hello.dev" required:"" env:"OAUTH_CLIENT_SECRET"`
-	ClientRedirect string `help:"client endpoint for the redirect" required:"" env:"OAUTH_CLIENT_REDIRECT"`
+	URN            string `default:"file:test.db?cache=shared&mode=memory" help:"urn for the database"`
+	Port           int    `default:"8080"                                  help:"port to listen for HTTP connections"`
+	ClientID       string `env:"OAUTH_CLIENT_ID"                           help:"client ID to hello.dev"              required:""`
+	ClientSecret   string `env:"OAUTH_CLIENT_SECRET"                       help:"client Secret to hello.dev"          required:""`
+	ClientRedirect string `env:"OAUTH_CLIENT_REDIRECT"                     help:"client endpoint for the redirect"    required:""`
 }
 
 func main() {
@@ -30,13 +31,12 @@ func main() {
 }
 
 func (c *CLI) Run() error {
-	db, err := NewDB(c.URN)
+	db, err := services.NewDB(c.URN)
 	if err != nil {
 		return fmt.Errorf("could not setup DB: %w", err)
 	}
 
 	server, err := NewServer(
-		c.Port,
 		db,
 		c.ClientID,
 		c.ClientSecret,
@@ -46,5 +46,10 @@ func (c *CLI) Run() error {
 		return fmt.Errorf("could not setup server: %w", err)
 	}
 
-	return server.Start(fmt.Sprintf("0.0.0.0:%d", c.Port))
+	err = server.Start(fmt.Sprintf("0.0.0.0:%d", c.Port))
+	if err != nil {
+		return fmt.Errorf("could not start server: %w", err)
+	}
+
+	return nil
 }
