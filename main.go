@@ -1,27 +1,20 @@
 package main
 
 import (
-	"database/sql"
-	"embed"
-	"errors"
 	"fmt"
 	"log"
 	"log/slog"
 	"os"
 
 	"github.com/alecthomas/kong"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/sqlite3"
-	"github.com/golang-migrate/migrate/v4/source/iofs"
-	_ "github.com/libsql/libsql-client-go/libsql"
-	_ "modernc.org/sqlite"
 )
 
-//go:embed migrations/*.sql
-var migrations embed.FS
-
 type CLI struct {
-	URN string `help:"urn for the database" default:"file:test.db?cache=shared&mode=memory"`
+	URN            string `help:"urn for the database" default:"file:test.db?cache=shared&mode=memory"`
+	Port           int    `help:"port to listen for HTTP connections" default:"8080"`
+	ClientID       string `help:"client ID to hello.dev" required:"" env:"OAUTH_CLIENT_ID"`
+	ClientSecret   string `help:"client Secret to hello.dev" required:"" env:"OAUTH_CLIENT_SECRET"`
+	ClientRedirect string `help:"client endpoint for the redirect" required:"" env:"OAUTH_CLIENT_REDIRECT"`
 }
 
 func main() {
@@ -36,35 +29,22 @@ func main() {
 	}
 }
 
-
 func (c *CLI) Run() error {
-	db, err := sql.Open("libsql", c.URN)
+	db, err := NewDB(c.URN)
 	if err != nil {
-		return fmt.Errorf("could open database: %w", err)
+		return fmt.Errorf("could not setup DB: %w", err)
 	}
 
-	migrationsFS, err := iofs.New(migrations, "migrations")
-	if err != nil {
-		return fmt.Errorf("could not wrap migrations: %w", err)
-	}
-
-	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
-	if err != nil {
-		return fmt.Errorf("could not wrap driver: %w", err)
-	}
-
-	migrator, err := migrate.NewWithInstance(
-		"iofs", migrationsFS,
-		"ql", driver,
+	server, err := NewServer(
+		c.Port,
+		db,
+		c.ClientID,
+		c.ClientSecret,
+		c.ClientRedirect,
 	)
 	if err != nil {
-		return fmt.Errorf("could not setup migrations: %w", err)
+		return fmt.Errorf("could not setup server: %w", err)
 	}
 
-	err = migrator.Up()
-	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		return fmt.Errorf("could not migrate up: %w", err)
-	}
-
-	return nil
+	return server.Start(fmt.Sprintf("0.0.0.0:%d", c.Port))
 }

@@ -1,0 +1,58 @@
+{% func Login(clientID string, clientEndpoint string) %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@next/css/pico.min.css" />
+  <link href="https://cdn.hello.coop/css/hello-btn.css" rel="stylesheet" />
+  <script src="https://cdn.hello.coop/js/hello-btn.js"></script>
+  <title>Hello, world!</title>
+</head>
+
+<body>
+  <main class="container">
+    <div class="hello-container">
+      <button id="login-button" class="hello-btn hello-btn-hover-flare"></button>
+      <button class="hello-about"></button>
+    </div>
+  </main>
+  <script>
+    function generateUUID() {
+      const array = new Uint8Array(16);
+      window.crypto.getRandomValues(array);
+      array[6] = (array[6] & 0x0f) | 0x40; // Set the 4 most significant bits of the 7th byte to 0100
+      array[8] = (array[8] & 0x3f) | 0x80; // Set the 2 most significant bits of the 9th byte to 10
+      return [...array].map(b => b.toString(16).padStart(2, '0')).join('-').match(/.{1,8}/g).join('-');
+    }
+
+    var button = document.getElementById("login-button");
+    button.addEventListener("click", function (event) {
+      button.classList.add('hello-btn-loader')
+      button.disabled = true;
+
+      // Create a new URL object
+      const url = new URL('https://wallet.hello.coop/authorize');
+
+      // Create a new URLSearchParams object to handle query parameters
+      const params = new URLSearchParams();
+
+      // Add the query parameters
+      params.append('client_id', {%q= clientID %});
+      params.append('nonce', generateUUID());
+      params.append('redirect_uri', {%q= clientEndpoint %});
+      params.append('response_mode', 'form_post');
+      params.append('response_type', 'id_token');
+      params.append('scope', 'name nickname email picture openid');
+
+      // Set the search parameters of the URL object to the URLSearchParams object
+      url.search = params.toString();
+
+      window.location.href = url.toString();
+    });
+  </script>
+</body>
+
+</html>
+{% endfunc %}
