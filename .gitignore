@@ -1,1 +1,2 @@
 .envrc
+templates/*.html.go
