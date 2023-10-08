@@ -2,7 +2,7 @@
 
 {% func Dashboard(
   user *services.UserService,
-  channel *services.ChannelService,
+  currentChannel *services.ChannelService,
 ) %}
 <!doctype html>
 <html lang="en">
@@ -75,7 +75,11 @@
               channels, _ := user.OccupiedChannels()
             %}
             {% for _, channel := range channels %}
-            <li><a href="/channels/{%d channel.ID %}">{%s channel.Name %}</a></li>
+            <li>
+              <a href="/dashboard/channels/{%d channel.ID %}" {% if currentChannel.ID() == channel.ID %}aria-current="page"{% endif %}>
+                {%s channel.Name %}
+              </a>
+            </li>
             {% endfor %}
           </ul>
         </details>
@@ -97,7 +101,14 @@
     </aside>
     <div class="contents">
       <div class="scrollable-content">
-
+        {% code
+          messages, _ := currentChannel.Messages()
+        %}
+        {% for _, message := range messages %}
+          <article>
+            {%s message.Copy %}
+          </article>
+        {% endfor %}
       </div>
       <div class="sticky-bottom">
         <textarea placeholder="Message"></textarea>

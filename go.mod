@@ -3,6 +3,7 @@ module github.com/jtarchie/sqlite-chat
 go 1.21.2
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/alecthomas/kong v0.8.0
 	github.com/dghubble/gologin/v2 v2.4.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
@@ -21,6 +22,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230512164433-5d1fd1a340c9 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect

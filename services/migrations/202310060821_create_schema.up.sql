@@ -136,3 +136,18 @@ FROM
   users u
   JOIN channel_members cm ON u.id = cm.user_id
   JOIN channels c ON cm.channel_id = c.id;
+
+CREATE VIEW channel_messages AS
+SELECT
+  c.id AS channel_id,
+  c.name AS channel_name,
+  m.id AS message_id,
+  m.copy AS message_copy,
+  u.name AS user_name,
+  m.created_at AS message_time
+FROM
+  channels c
+  JOIN messages m ON c.id = m.channel_id
+  JOIN users u ON m.user_id = u.id
+ORDER BY
+  m.created_at ASC;

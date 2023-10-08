@@ -2,7 +2,9 @@ package server_test
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/imroc/req/v3"
 	"github.com/jmoiron/sqlx"
 	"github.com/jtarchie/sqlite-chat/server"
@@ -51,8 +53,11 @@ var _ = Describe("Dashboard", func() {
 			Expect(response.IsSuccessState()).To(BeTrue())
 			Expect(response.Response.Request.URL.String()).To(ContainSubstring("/dashboard/channels/1"))
 
-			body := response.String()
-			Expect(body).To(ContainSubstring("general"))
+			doc, err := goquery.NewDocumentFromReader(strings.NewReader(response.String()))
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(doc.Find(`a:contains("general")`).Nodes).To(HaveLen(1))
+			Expect(doc.Find(`article:contains("Welcome to the chat")`).Nodes).To(HaveLen(1))
 		})
 	})
 })

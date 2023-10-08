@@ -18,7 +18,7 @@ var (
 
 func StreamDashboard(qw422016 *qt422016.Writer,
 	user *services.UserService,
-	channel *services.ChannelService,
+	currentChannel *services.ChannelService,
 ) {
 	qw422016.N().S(`
 <!doctype html>
@@ -95,11 +95,19 @@ func StreamDashboard(qw422016 *qt422016.Writer,
             `)
 	for _, channel := range channels {
 		qw422016.N().S(`
-            <li><a href="/channels/`)
+            <li>
+              <a href="/dashboard/channels/`)
 		qw422016.N().D(channel.ID)
-		qw422016.N().S(`">`)
+		qw422016.N().S(`" `)
+		if currentChannel.ID() == channel.ID {
+			qw422016.N().S(`aria-current="page"`)
+		}
+		qw422016.N().S(`>
+                `)
 		qw422016.E().S(channel.Name)
-		qw422016.N().S(`</a></li>
+		qw422016.N().S(`
+              </a>
+            </li>
             `)
 	}
 	qw422016.N().S(`
@@ -123,7 +131,21 @@ func StreamDashboard(qw422016 *qt422016.Writer,
     </aside>
     <div class="contents">
       <div class="scrollable-content">
+        `)
+	messages, _ := currentChannel.Messages()
 
+	qw422016.N().S(`
+        `)
+	for _, message := range messages {
+		qw422016.N().S(`
+          <article>
+            `)
+		qw422016.E().S(message.Copy)
+		qw422016.N().S(`
+          </article>
+        `)
+	}
+	qw422016.N().S(`
       </div>
       <div class="sticky-bottom">
         <textarea placeholder="Message"></textarea>
@@ -138,19 +160,19 @@ func StreamDashboard(qw422016 *qt422016.Writer,
 
 func WriteDashboard(qq422016 qtio422016.Writer,
 	user *services.UserService,
-	channel *services.ChannelService,
+	currentChannel *services.ChannelService,
 ) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	StreamDashboard(qw422016, user, channel)
+	StreamDashboard(qw422016, user, currentChannel)
 	qt422016.ReleaseWriter(qw422016)
 }
 
 func Dashboard(
 	user *services.UserService,
-	channel *services.ChannelService,
+	currentChannel *services.ChannelService,
 ) string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	WriteDashboard(qb422016, user, channel)
+	WriteDashboard(qb422016, user, currentChannel)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
