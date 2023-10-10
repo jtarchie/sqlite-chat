@@ -8,10 +8,18 @@ import (
 
 	"github.com/dghubble/gologin/v2"
 	"github.com/dghubble/gologin/v2/github"
+	"github.com/dghubble/sessions"
 	"github.com/jtarchie/sqlite-chat/server/templates"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	githubOAuth2 "golang.org/x/oauth2/github"
+)
+
+//nolint
+var sessionStore = sessions.NewCookieStore[string](
+	sessions.DebugCookieConfig,
+	[]byte("something-secret-this-way-comes"),
+	nil,
 )
 
 func setupAuth(
@@ -52,15 +60,29 @@ func setupAuth(
 func issueSession() http.Handler {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
-		githubUser, err := github.UserFromContext(ctx)
 
+		githubUser, err := github.UserFromContext(ctx)
 		if err != nil {
 			slog.Error("could not log in user", slog.String("error", err.Error()))
 			http.Error(w, "could not log in user", http.StatusInternalServerError)
-		} else {
-			slog.Info("logged in", slog.String("login", *githubUser.Login))
-			http.Redirect(w, req, "/dashboard", http.StatusFound)
+
+			return
 		}
+		// Register user
+		// save session for the user
+		session := sessionStore.New("chat-app")
+		session.Set("email", *githubUser.Email)
+
+		err = session.Save(w)
+		if err != nil {
+			slog.Error("could not set session", slog.String("error", err.Error()))
+			http.Error(w, "could not log in user", http.StatusInternalServerError)
+
+			return
+		}
+
+		slog.Info("logged in", slog.String("login", *githubUser.Login))
+		http.Redirect(w, req, "/dashboard", http.StatusFound)
 	}
 
 	return http.HandlerFunc(fn)

@@ -6,6 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/alecthomas/kong v0.8.0
 	github.com/dghubble/gologin/v2 v2.4.0
+	github.com/dghubble/sessions v0.4.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/imroc/req/v3 v3.42.1
 	github.com/jmoiron/sqlx v1.3.5
@@ -36,6 +37,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/pprof v0.0.0-20230901174712-0191c66da455 // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -14,6 +15,14 @@ import (
 
 func setupChannels(db *sqlx.DB, server *echo.Echo) {
 	server.GET("/dashboard", func(c echo.Context) error {
+		session, err := sessionStore.Get(c.Request(), "chat-app")
+		if err != nil {
+			slog.Error("could not get session", slog.String("error", err.Error()))
+		} else {
+			email := session.Get("email")
+			slog.Info("session email", slog.String("email", email))
+		}
+
 		user := services.NewUser(db, "bot@example.com")
 
 		channels, err := user.OccupiedChannels()
